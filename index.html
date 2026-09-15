@@ -1002,7 +1002,7 @@ loadMenuFromServer().then(() => {
 loadZonesFromServer().then(() => { renderZones(); });
 state.activeCat = (CATEGORIES[0] && CATEGORIES[0].id) || null;
 
-const DELIVERY_MIN_QTY = 10;
+const DELIVERY_MIN_QTY = 1;
 function minQtyForOrderType(){ return state.orderType === "delivery" ? DELIVERY_MIN_QTY : 1; }
 function defaultSelections(item){
   const mandatory = {};
