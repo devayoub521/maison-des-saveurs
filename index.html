@@ -355,6 +355,12 @@
   .type-tabs{display:flex;gap:8px;margin-bottom:14px;}
   .type-tab{flex:1;padding:10px 6px;text-align:center;border-radius:12px;border:1.5px solid var(--border);font-size:12.5px;font-weight:700;cursor:pointer;background:var(--surface-2);color:var(--text-muted);}
   .type-tab.active{background:var(--text);color:var(--bg);border-color:var(--text);}
+  .order-gate{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center}
+  .order-gate h2{font-size:19px;margin:0}
+  .order-gate p{color:var(--text-muted);font-size:13px;margin:0 0 6px;max-width:320px}
+  .order-gate-options{display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px}
+  .order-gate-btn{padding:16px;border-radius:14px;border:1.5px solid var(--border);background:var(--surface);font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--text)}
+  .order-gate-btn:hover{border-color:var(--accent);transform:translateY(-1px)}
   .loc-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;border-radius:11px;border:1.5px dashed var(--border);background:var(--surface-2);color:var(--accent-strong);font-weight:700;font-size:12.5px;cursor:pointer;margin-bottom:12px;}
   .summary-line{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;color:var(--text-muted);}
   .summary-line.total{font-size:16px;font-weight:800;color:var(--text);border-top:1px solid var(--border);margin-top:6px;padding-top:10px;}
@@ -410,6 +416,16 @@
 </style>
 
 <div class="app" id="app">
+<div class="order-gate" id="orderGate">
+  <span style="font-size:38px">🍰</span>
+  <h2>كيف تريدون طلبكم؟</h2>
+  <p>اختاروا طريقة الاستلام لعرض القائمة والأسعار المناسبة لكم</p>
+  <div class="order-gate-options">
+    <button class="order-gate-btn" type="button" data-gate-type="delivery">🛵 توصيل</button>
+    <button class="order-gate-btn" type="button" data-gate-type="takeaway">🛍️ استلام من المحل</button>
+    <button class="order-gate-btn" type="button" data-gate-type="dinein">🍽️ داخل المحل</button>
+  </div>
+</div>
 <div id="customerView">
   <div class="demo-ribbon">
         <span>👋 مرحباً بكم في Maison des Saveurs!</span>
@@ -721,6 +737,19 @@ const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp
       state.orderType = "takeaway";
     }
   } catch(e) {}
+})();
+// شاشة اختيار نوع الطلب أولاً — تظهر فقط للرابط العام (بدون table/type في الرابط)؛
+// روابط QR الجاهزة (طاولة أو استلام) تتخطّاها لأن النوع محدَّد مسبقاً من الرابط نفسه.
+(function initOrderGate(){
+  const gate = $("orderGate");
+  if (!gate) return;
+  if (state.orderType !== "delivery") { gate.hidden = true; return; }
+  gate.querySelectorAll("[data-gate-type]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.orderType = btn.dataset.gateType;
+      gate.hidden = true;
+    });
+  });
 })();
 function tagClass(t){ if (t === "Best Seller") return "best"; if (t === "Popular") return "popular"; if (t === "Spicy") return "spicy"; return "popular"; }
 function categoryImage(categoryId){ const c = CATEGORIES.find(c => c.id === categoryId); return c && c.image; }
