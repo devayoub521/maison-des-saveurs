@@ -743,7 +743,8 @@ const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp
 (function initOrderGate(){
   const gate = $("orderGate");
   if (!gate) return;
-  if (state.orderType !== "delivery") { gate.hidden = true; return; }
+  const gateHash = location.hash.replace("#", "");
+  if (state.orderType !== "delivery" || gateHash === "staff" || gateHash === "driver" || gateHash.indexOf("driver-") === 0) { gate.hidden = true; return; }
   gate.querySelectorAll("[data-gate-type]").forEach(btn => {
     btn.addEventListener("click", () => {
       state.orderType = btn.dataset.gateType;
